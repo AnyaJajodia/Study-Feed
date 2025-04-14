@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Search Topics - Study Reels{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h4>Search Topics</h4>
+</div>
+<div class="mt-3">
+  <form action="{{ url_for('search') }}" method="get">
+    <div class="form-group">
+      <input type="text" class="form-control" name="q" placeholder="Search a topic..." value="{{ query }}">
+    </div>
+    <button type="submit" class="btn btn-primary">Search</button>
+  </form>
+  <br>
+  <div>
+    <h5>Results</h5>
+    <ul class="list-group">
+      {% for topic in results %}
+        <li class="list-group-item">{{ topic }}</li>
+      {% else %}
+        <li class="list-group-item">No topics found.</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endblock %}

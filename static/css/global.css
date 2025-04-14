@@ -1,0 +1,161 @@
+/* global.css */
+
+/* Consistent header styling for all pages */
+.page-header {
+    width: 100%;
+    padding: 15px 10px;
+    background-color: #fff;
+    border-bottom: 1px solid #ddd;  /* This acts as the hr */
+    margin-bottom: 15px;
+  }
+  
+  .page-header h1,
+  .page-header h2,
+  .page-header h3,
+  .page-header h4,
+  .page-header h5,
+  .page-header h6 {
+    margin: 0;
+    font-size: 1.5em;  /* Uniform font size; adjust as needed */
+    color: #333;
+  }
+  
+  /* You can include your other global styles below */
+  /* Example styles from before: */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border-top: 1px solid #ddd;
+    z-index: 1000;
+  }
+  .bottom-nav a {
+    display: block;
+    width: 33.33%;
+    text-align: center;
+    padding: 10px 0;
+    text-decoration: none;
+    color: #333;
+  }
+
+
+/* Smaller header for pages like feed_reels */
+.page-header-small {
+    width: 100%;
+    padding: 5px 10px;    /* Reduced padding */
+    background-color: #fff;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 5px;
+  }
+  .page-header-small h4 {
+    margin: 0;
+    font-size: 1em;       /* Smaller font size */
+    color: #333;
+  }
+  
+  /* Hide bottom navbar on pages with the no-navbar class */
+  .no-navbar nav.bottom-nav {
+    display: none !important;
+  }
+
+  .fixed-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #fff;
+    border-bottom: 1px solid #ddd;
+    padding: 5px 10px;
+    z-index: 1200;
+  }
+  .fixed-header a.back-btn {
+    font-size: 0.9em;
+    margin-right: 10px;
+  }
+  .fixed-header h4 {
+    display: inline-block;
+    margin: 0;
+    font-size: 1em; /* Smaller font size */
+    vertical-align: middle;
+  }
+  
+  /* Swiper styles */
+  .swiper-container {
+    width: 100%;
+    height: calc(100vh - 60px);
+    overflow: hidden;
+  }
+  .swiper-slide {
+    width: 100%;
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding-top: 70px;
+  }
+  .slide-wrapper {
+    /* display: flex;
+    flex-direction: row;
+    width: 100%;
+    transition: all 0.3s ease; */
+    height: 100% !important;
+    display: flex;
+    flex-direction: row !important;
+  }
+  .reel-content {
+    flex: 1;
+    transition: all 0.3s ease;
+  }
+
+  /* Make the reel video fill its slide completely */
+.reel-video {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+  .comment-panel {
+    width: 0;
+    padding: 0; /* Remove padding when hidden */
+    overflow: hidden;
+    transition: width 0.3s ease, padding 0.3s ease;
+    background-color: #f8f9fa;
+    box-sizing: border-box;
+  }
+  
+  .slide-wrapper.show-comments .comment-panel {
+    width: 300px;
+    padding: 0 10px; /* Add padding only when visible */
+  }
+  
+  .slide-wrapper.show-comments .comment-panel {
+    width: 300px;
+  }
+  .slide-content {
+    width: 90%;
+    max-width: 600px;
+    margin: auto;
+  }
+  .slide-content img {
+    width: 100%;
+    max-height: 40vh;
+    object-fit: cover;
+  }
+  .next-btn {
+    position: fixed;
+    bottom: 90px;
+    right: 100px;
+    z-index: 1100;
+    opacity: 0.9;
+  }
+
+  .prev-btn {
+    position: fixed;
+    bottom: 90px;
+    left: 100px;
+    z-index: 1100;
+    opacity: 0.9;
+  }
+  
