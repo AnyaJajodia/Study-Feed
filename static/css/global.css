@@ -1,161 +1,275 @@
 /* global.css */
+body {
+  /* padding-top: 60px; */
+  background-color: #333;
+  color: lightgray;
+}
 
 /* Consistent header styling for all pages */
 .page-header {
-    width: 100%;
-    padding: 15px 10px;
-    background-color: #fff;
-    border-bottom: 1px solid #ddd;  /* This acts as the hr */
-    margin-bottom: 15px;
-  }
-  
-  .page-header h1,
-  .page-header h2,
-  .page-header h3,
-  .page-header h4,
-  .page-header h5,
-  .page-header h6 {
-    margin: 0;
-    font-size: 1.5em;  /* Uniform font size; adjust as needed */
-    color: #333;
-  }
-  
-  /* You can include your other global styles below */
-  /* Example styles from before: */
-  .bottom-nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: #fff;
-    border-top: 1px solid #ddd;
-    z-index: 1000;
-  }
-  .bottom-nav a {
-    display: block;
-    width: 33.33%;
-    text-align: center;
-    padding: 10px 0;
-    text-decoration: none;
-    color: #333;
-  }
+  width: 100%;
+  padding: 15px 10px;
+  background-color: #000;  /* Dark background for dark theme */
+  border-bottom: 1px solid #333;  /* Dark border for dark theme */
+  margin-bottom: 15px;
+}
 
+.custom-container {
+  padding-left: 50px;
+  padding-right: 50px;
+}
+
+.page-header h1,
+.page-header h2,
+.page-header h3,
+.page-header h4,
+.page-header h5,
+.page-header h6 {
+  margin: 10px;
+  font-size: 1.5em;  /* Uniform font size; adjust as needed */
+  color: #fff;  /* Light text on dark background */
+}
+
+/* Bottom nav */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #000;  /* Dark background for bottom navigation */
+  border-top: 1px solid #333;  /* Dark border for dark theme */
+  z-index: 1000;
+}
+.bottom-nav a {
+  display: block;
+  width: 33.33%;
+  text-align: center;
+  padding: 10px 0;
+  text-decoration: none;
+  color: #fff;  /* Light text on dark background */
+}
 
 /* Smaller header for pages like feed_reels */
 .page-header-small {
-    width: 100%;
-    padding: 5px 10px;    /* Reduced padding */
-    background-color: #fff;
-    border-bottom: 1px solid #ddd;
-    margin-bottom: 5px;
-  }
-  .page-header-small h4 {
-    margin: 0;
-    font-size: 1em;       /* Smaller font size */
-    color: #333;
-  }
-  
-  /* Hide bottom navbar on pages with the no-navbar class */
-  .no-navbar nav.bottom-nav {
-    display: none !important;
-  }
-
-  .fixed-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    background-color: #fff;
-    border-bottom: 1px solid #ddd;
-    padding: 5px 10px;
-    z-index: 1200;
-  }
-  .fixed-header a.back-btn {
-    font-size: 0.9em;
-    margin-right: 10px;
-  }
-  .fixed-header h4 {
-    display: inline-block;
-    margin: 0;
-    font-size: 1em; /* Smaller font size */
-    vertical-align: middle;
-  }
-  
-  /* Swiper styles */
-  .swiper-container {
-    width: 100%;
-    height: calc(100vh - 60px);
-    overflow: hidden;
-  }
-  .swiper-slide {
-    width: 100%;
-    height: 100% !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    padding-top: 70px;
-  }
-  .slide-wrapper {
-    /* display: flex;
-    flex-direction: row;
-    width: 100%;
-    transition: all 0.3s ease; */
-    height: 100% !important;
-    display: flex;
-    flex-direction: row !important;
-  }
-  .reel-content {
-    flex: 1;
-    transition: all 0.3s ease;
-  }
-
-  /* Make the reel video fill its slide completely */
-.reel-video {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
+  width: 100%;
+  padding: 5px 10px;    /* Reduced padding */
+  background-color: #000;  /* Dark background */
+  border-bottom: 1px solid #333;  /* Dark border */
+  margin-bottom: 5px;
+}
+.page-header-small h4 {
+  margin: 0;
+  font-size: 1em;       /* Smaller font size */
+  color: #fff;  /* Light text on dark background */
 }
 
-  .comment-panel {
-    width: 0;
-    padding: 0; /* Remove padding when hidden */
-    overflow: hidden;
-    transition: width 0.3s ease, padding 0.3s ease;
-    background-color: #f8f9fa;
-    box-sizing: border-box;
-  }
-  
-  .slide-wrapper.show-comments .comment-panel {
-    width: 300px;
-    padding: 0 10px; /* Add padding only when visible */
-  }
-  
-  .slide-wrapper.show-comments .comment-panel {
-    width: 300px;
-  }
-  .slide-content {
-    width: 90%;
-    max-width: 600px;
-    margin: auto;
-  }
-  .slide-content img {
-    width: 100%;
-    max-height: 40vh;
-    object-fit: cover;
-  }
-  .next-btn {
-    position: fixed;
-    bottom: 90px;
-    right: 100px;
-    z-index: 1100;
-    opacity: 0.9;
-  }
+/* Hide bottom navbar on pages with the no-navbar class */
+.no-navbar nav.bottom-nav {
+  display: none !important;
+}
 
-  .prev-btn {
-    position: fixed;
-    bottom: 90px;
-    left: 100px;
-    z-index: 1100;
-    opacity: 0.9;
-  }
-  
+.fixed-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: #000;  /* Dark background */
+  border-bottom: 1px solid #333;  /* Dark border */
+  padding: 5px 10px;
+  z-index: 1200;
+}
+.fixed-header a.back-btn {
+  font-size: 0.9em;
+  margin-right: 10px;
+  color: #fff;  /* Light text for back button */
+}
+.fixed-header h4 {
+  display: inline-block;
+  margin: 0;
+  font-size: 1em; /* Smaller font size */
+  vertical-align: middle;
+  color: #fff;  /* Light text */
+}
+
+/* Swiper styles */
+.swiper-container {
+  width: 100%;
+  height: calc(100vh - 60px);
+  overflow: hidden;
+}
+.swiper-slide {
+  width: 100%;
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding-top: 70px;
+}
+.slide-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;   /* Centers the reel (and comment-panel, when hidden) */
+  align-items: stretch;
+  position: relative;
+  transition: all 0.3s ease;
+}
+.slide-wrapper.show-comments .reel-content {
+  transform: translateX(-50px);  /* Adjust value as needed */
+  transition: transform 0.3s ease;
+}
+.reel-content {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: center; 
+  align-items: center;
+  transition: transform 0.3s ease;
+}
+.instagram-reel-container {
+  position: relative;
+  width: 375px;     /* typical phone width, adjust as needed */
+  height: 667px;    /* typical phone height, adjust as needed */
+  background: #000; /* fallback if no video is present */
+  border-radius: 7px;  /* Slightly rounded edges */
+  overflow: hidden;  /* Contain inner elements within rounded edges */
+  box-shadow: -4px 0 10px rgba(0, 0, 0, 0.7);  /* Dark, soft shadow */
+}
+.reel-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.slide-content {
+  width: 90%;
+  max-width: 600px;
+  margin: auto;
+}
+.slide-content img {
+  width: 100%;
+  max-height: 40vh;
+  object-fit: cover;
+}
+/* Subtitles overlay – unchanged */
+.subtitle-overlay {
+  position: absolute;
+  top: 50%;              /* Position at 50% from the top */
+  left: 0;
+  width: 100%;
+  transform: translateY(-50%); /* Shift upward by 50% of its height */
+  text-align: center;
+  color: white;
+  font-size: 1.2em;
+  line-height: 1.4em;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+  padding: 10px;
+  box-sizing: border-box;
+  background: rgba(0, 0, 0, 0.6); /* semi-transparent for readability */
+}
+
+/* Overlay with username, caption & comment button with semi-transparent black background */
+.reel-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+}
+.reel-overlay-text {
+  display: flex;
+  flex-direction: column;
+}
+.username-comment {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 5px;
+}
+.username-comment h5 {
+  margin: 0;
+  font-size: 1.1em;
+}
+.username-comment .comment-btn {
+  color: #fff;
+  border: none; /* remove border so gradient stands out */
+  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  font-size: 0.9em;
+  padding: 4px 8px;
+  transition: opacity 0.3s ease;
+}
+.username-comment .comment-btn:hover {
+  opacity: 0.8;
+}
+.caption {
+  margin: 0;
+  font-size: 0.95em;
+}
+
+/* Comment panel (right side) */
+.comment-panel {
+  width: 0;                     /* Hidden by default */
+  height: 100%;
+  overflow: hidden;
+  transition: width 0.3s ease, padding 0.3s ease;
+  background-color: #181818;  /* Dark background for comment panel */
+  color: #fff;  /* Light text */
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+/* When active, the comment panel expands—now wider (e.g., 400px) with dark shadow */
+.slide-wrapper.show-comments .comment-panel {
+  width: 400px;                 /* Increased width */
+  padding: 10px;
+  box-shadow: -4px 0 10px rgba(0, 0, 0, 0.7);  /* Dark shadow on the left edge */
+}
+
+/* Make the comment list scrollable when needed */
+.comment-panel .comments-list {
+  flex: 1;
+  overflow-y: auto;
+  margin-top: 10px;
+}
+
+/* Instagram gradient for all primary action buttons */
+.btn-primary,
+.prev-btn,
+.next-btn,
+.submit-comment,
+.comment-btn {
+  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  border: 1px solid black;
+  color: #fff;
+  transition: opacity 0.3s ease;
+}
+.btn-primary:hover,
+.prev-btn:hover,
+.next-btn:hover,
+.submit-comment:hover,
+.comment-btn:hover {
+  background: linear-gradient(315deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  opacity: 0.7;
+  transition: 0.3s ease;
+}
+
+.btn-danger {
+  border: 1px solid black;
+}
+
+/* Optional: style positioning for next/prev buttons */
+.prev-btn, .next-btn {
+  position: absolute;
+  z-index: 999;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.prev-btn { left: 10px; }
+.next-btn { right: 10px; }
+
+.dark-font {
+  color:#333 !important;
+}

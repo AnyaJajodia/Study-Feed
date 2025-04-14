@@ -1,27 +1,42 @@
 {% extends "base.html" %}
-{% block title %}Search Topics - Study Reels{% endblock %}
+{% block title %}Search Page - Study Reels{% endblock %}
 
-{% block content %}
-<div class="page-header">
-  <h4>Search Topics</h4>
-</div>
-<div class="mt-3">
-  <form action="{{ url_for('search') }}" method="get">
-    <div class="form-group">
-      <input type="text" class="form-control" name="q" placeholder="Search a topic..." value="{{ query }}">
-    </div>
-    <button type="submit" class="btn btn-primary">Search</button>
+{% block full_width_header %}
+<div class="page-header d-flex justify-content-between align-items-center">
+  <!-- Header left side -->
+  <h4>Search Page</h4>
+  <!-- Search bar on the right -->
+  <form id="feed-search-form" class="form-inline" action="{{ url_for('search') }}" method="get">
+    <input id="feed-search-input" type="text" class="form-control" name="q"
+           placeholder="Search For You Pages..." value="{{ query }}">
+    <button type="submit" class="btn btn-primary ml-2">Search</button>
   </form>
-  <br>
-  <div>
-    <h5>Results</h5>
-    <ul class="list-group">
-      {% for topic in results %}
-        <li class="list-group-item">{{ topic }}</li>
-      {% else %}
-        <li class="list-group-item">No topics found.</li>
+</div>
+
+<div class="mt-3 custom-container">
+  <!-- Light grey text for "Search results for" -->
+  <p class="text-muted mb-3">
+    Search results for "{{ query }}"
+  </p>
+  
+  {% if feeds|length == 0 %}
+    <div class="alert alert-info">No For You pages found.</div>
+  {% else %}
+    <div class="row" id="feed-list-container">
+      {% for feed in feeds %}
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title dark-font">{{ feed.name }}</h5>
+              <a href="{{ url_for('resume_feed', feed_id=feed.id) }}" class="btn btn-sm btn-primary">Resume</a>
+              <a href="{{ url_for('delete_feed', feed_id=feed.id) }}" class="btn btn-sm btn-danger">Delete</a>
+            </div>
+          </div>
+        </div>
       {% endfor %}
-    </ul>
-  </div>
+    </div>
+  {% endif %}
 </div>
 {% endblock %}
+
+

@@ -3,28 +3,21 @@
 
 {% block extra_head %}
 <style>
-  /* Hide the bottom navbar on this page */
+  /* Hide bottom navbar on this page */
   nav.bottom-nav {
     display: none !important;
-  }
-  /* Additional styling if needed */
-  .reel-video {
-    width: 100%;
-    height: auto;
-    max-height: 60vh;
-    object-fit: cover;
   }
 </style>
 {% endblock %}
 
 {% block content %}
-<!-- Fixed Header -->
+<!-- A fixed header that sits above the reels -->
 <div class="fixed-header">
-  <a href="{{ url_for('for_you') }}" class="back-btn btn btn-link">&larr; Back to For You Pages</a>
+  <a href="{{ url_for('for_you') }}" class="back-btn btn btn-link">&larr; Back</a>
   <h4>{{ feed.name }} Reels</h4>
 </div>
 
-<!-- Swiper Container for Reels -->
+<!-- Swiper Container -->
 <div class="swiper-container">
   <div class="swiper-wrapper">
     {% if feed.reels|length == 0 %}
@@ -33,55 +26,70 @@
       </div>
     {% else %}
       {% for reel in feed.reels %}
-        <div class="swiper-slide">
-          <div class="slide-wrapper">
-            <!-- Reel Content Section -->
-            <div class="reel-content">
-              <div class="card slide-content">
-                {% if reel.video %}
-                  <video class="reel-video" autoplay loop muted playsinline>
-                    <source src="{{ reel.video }}" type="video/mp4">
-                    Your browser does not support the video tag.
-                  </video>
-                {% else %}
-                  <div class="alert alert-warning">Video not available.</div>
-                {% endif %}
-                <div class="card-body">
-                  <h5 class="card-title">{{ reel.title }}</h5>
-                  <!-- Display the brief description -->
-                  <p class="card-text">{{ reel.description }}</p>
-                  {% if reel.audio %}
-                    <audio class="voiceover" preload="auto" style="display: none;">
-                      <source src="{{ reel.audio }}" type="audio/mpeg">
-                      Your browser does not support the audio element.
-                    </audio>
-                  {% endif %}
-                  <button class="btn btn-sm btn-outline-secondary comment-btn">Comment</button>
+      <div class="swiper-slide">
+        <div class="slide-wrapper">
+          <!-- Reel-like container on the left -->
+          <div class="reel-content">
+            <div class="instagram-reel-container">
+              {% if reel.video %}
+                <video class="reel-video" autoplay loop muted playsinline>
+                  <source src="{{ reel.video }}" type="video/mp4">
+                  Your browser does not support the video tag.
+                </video>
+                <!-- Subtitles -->
+                <div class="subtitle-overlay" data-subtitles='{{ reel.subtitles|safe }}'></div>
+              {% else %}
+                <div class="alert alert-warning">Video not available.</div>
+              {% endif %}
+
+              <!-- Overlay with username/title + caption -->
+              <div class="reel-overlay">
+                <div class="reel-overlay-text">
+                  <div class="username-comment">
+                    <!-- Mock username is the reel title -->
+                    <h5>@{{ reel.title }}</h5>
+                    <!-- A button that toggles the comment panel -->
+                    <button class="comment-btn btn btn-sm">Comment</button>
+                  </div>
+                  <!-- The short description as the reel caption -->
+                  <p class="caption">{{ reel.description }}</p>
                 </div>
               </div>
+
+              {% if reel.audio %}
+                <!-- Hidden TTS or voiceover audio -->
+                <audio class="voiceover" preload="auto" style="display:none;">
+                  <source src="{{ reel.audio }}" type="audio/mpeg">
+                  Your browser does not support the audio element.
+                </audio>
+              {% endif %}
             </div>
-            <!-- Comment Panel Section -->
-            <div class="comment-panel">
-              <h6>Comments</h6>
-              <input type="hidden" class="reel-id" value="{{ reel.id }}">
-              <textarea class="form-control comment-input" placeholder="Add a comment..."></textarea>
-              <button class="btn btn-primary btn-sm mt-2 submit-comment">Submit</button>
-              <div class="comments-list mt-2">
-                {% for comment in reel.comments %}
-                  <div class="comment-item" data-comment-id="{{ comment.id }}">
-                    <small>{{ comment.content }}</small>
-                    <button class="btn btn-link btn-sm delete-comment">Delete</button>
-                  </div>
-                {% endfor %}
-              </div>
+          </div>
+
+          <!-- Comment panel sliding in from right -->
+          <div class="comment-panel">
+            <h6>Comments</h6>
+            <input type="hidden" class="reel-id" value="{{ reel.id }}">
+            <textarea class="form-control comment-input" placeholder="Add a comment..."></textarea>
+            <button class="btn btn-primary btn-sm mt-2 submit-comment">Submit</button>
+            <div class="comments-list mt-2">
+              {% for comment in reel.comments %}
+                <div class="comment-item" data-comment-id="{{ comment.id }}">
+                  <small>{{ comment.content }}</small>
+                  <button class="btn btn-link btn-sm delete-comment">Delete</button>
+                </div>
+              {% endfor %}
             </div>
           </div>
         </div>
+      </div>
       {% endfor %}
     {% endif %}
   </div>
   <div class="swiper-pagination"></div>
 </div>
+
+<!-- Optional: Next/Previous buttons -->
 <button class="btn btn-primary prev-btn" id="prevBtn">Previous</button>
 <button class="btn btn-primary next-btn" id="nextBtn">Next</button>
 {% endblock %}

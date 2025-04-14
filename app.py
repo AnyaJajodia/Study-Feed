@@ -8,7 +8,7 @@ import os
 import openai
 import requests
 from datetime import datetime
-from google.cloud import texttospeech
+from google.cloud import texttospeech, speech
 import random
 
 print("Current working directory:", os.getcwd())
@@ -43,6 +43,7 @@ class Reel(db.Model):
     content = db.Column(db.Text, nullable=False)  # This will now store the 'teaching' text
     audio = db.Column(db.String(300))
     video = db.Column(db.String(300))  # Path/URL to the generated video
+    subtitles = db.Column(db.Text)     # JSON string with subtitle timing
     feed_id = db.Column(db.Integer, db.ForeignKey('feed.id'), nullable=False)
     comments = db.relationship('Comment', backref='reel', lazy=True, cascade="all, delete-orphan")
 
@@ -74,6 +75,13 @@ def for_you():
     else:
         feeds = Feed.query.all()
     return render_template('for_you.html', feeds=feeds)
+
+@app.route('/search', methods=['GET'])
+def search():
+    query = request.args.get('q', '').strip().lower()
+    feeds = Feed.query.filter(Feed.name.ilike(f'%{query}%')).all() if query else []
+    return render_template('search.html', query=query, feeds=feeds)
+
 
 
 @app.route('/make_new')
@@ -148,17 +156,14 @@ import uuid  # Import at the top if not already imported
 def generate_feed():
     topic = request.form.get('topic')
     level = request.form.get('level')
-    # file upload removed – we now only use topic.
     if not topic:
         flash('Topic is required to generate a feed.', 'danger')
         return redirect(url_for('make_new'))
 
-    # Create Feed record.
     new_feed = Feed(name=topic, level=level, file_count=0)
     db.session.add(new_feed)
-    db.session.commit()  # new_feed now has an id.
+    db.session.commit()
 
-    # Generate reels using OpenAI (or your preferred generation function)
     reels_data = generate_feed_content(topic)
     if not reels_data:
         reels_data = [{
@@ -172,7 +177,7 @@ def generate_feed():
         description = reel_data.get("description", "")
         teaching_text = reel_data.get("teaching", "")
         
-        # Randomly select one video from static/videos folder.
+        # Randomly select one video from static/videos
         videos_dir = os.path.join(app.root_path, 'static', 'videos')
         video_files = [f for f in os.listdir(videos_dir) if f.endswith('.mp4')]
         if video_files:
@@ -181,9 +186,17 @@ def generate_feed():
         else:
             video_url = ""
         
-        # Generate audio using Google TTS helper.
+        # Generate audio using Google TTS (your existing helper)
         audio_filename = f"{uuid.uuid4()}.mp3"
         audio_url = generate_voiceover(teaching_text, audio_filename)
+        
+        # Get the full path to the generated audio file
+        audios_folder = os.path.join(app.root_path, 'static', 'audios')
+        audio_filepath = os.path.join(audios_folder, audio_filename)
+        
+        # Generate subtitles from the audio file
+        subtitles_list = generate_subtitles(audio_filepath)
+        subtitles_json = json.dumps(subtitles_list)
         
         new_reel = Reel(
             title=title,
@@ -191,6 +204,7 @@ def generate_feed():
             content=teaching_text,
             video=video_url,
             audio=audio_url,
+            subtitles=subtitles_json,
             feed_id=new_feed.id
         )
         db.session.add(new_reel)
@@ -198,7 +212,6 @@ def generate_feed():
 
     flash(f"Feed '{topic}' created successfully!", "success")
     return redirect(url_for('for_you'))
-
 
 
 
@@ -314,27 +327,39 @@ def generate_voiceover(text, filename):
     # Return the URL to access the file (e.g., /static/audios/filename.mp3)
     return url_for('static', filename='audios/' + filename)
 
+def generate_subtitles(audio_filepath):
+    """
+    Process the given audio file using Google Speech-to-Text to obtain
+    word-level timestamps. Returns a list of dictionaries, each with
+    keys: 'start', 'end', and 'word'. 
+    """
+    from google.cloud import speech  # Use the standard client instead of speech_v1p1beta1
 
+    client = speech.SpeechClient()
 
-# def generate_image(prompt_text):
-#     detailed_prompt = (
-#         f"Create an educational illustration that visually represents the following concept: {prompt_text}. "
-#         "The style should be clean and modern, with clear diagrams or icons suitable for an educational app. "
-#         "Focus on clarity, simplicity, and visual appeal. Do not include too much text, if possible none."
-#     )
-#     try:
-#         response = openai.Image.create(
-#             prompt=detailed_prompt,
-#             n=1,
-#             size="512x512"  # You can adjust the size as needed
-#         )
-#         # Extract the URL from the response
-#         image_url = response['data'][0]['url']
-#         return image_url
-#     except Exception as e:
-#         print("Error generating image:", e)
-#         # Return a fallback image if there’s an error
-#         return "https://via.placeholder.com/350x150"
+    # Read the audio file content
+    with open(audio_filepath, "rb") as audio_file:
+        content = audio_file.read()
+
+    audio = speech.RecognitionAudio(content=content)
+    config = speech.RecognitionConfig(
+        encoding=speech.RecognitionConfig.AudioEncoding.MP3,
+        sample_rate_hertz=24000,  # Adjust as appropriate for your audio file
+        language_code="en-US",
+        enable_word_time_offsets=True
+    )
+
+    response = client.recognize(config=config, audio=audio)
+    subtitles = []
+    # Loop through the results and each word in the alternative
+    for result in response.results:
+        alternative = result.alternatives[0]
+        for word_info in alternative.words:
+            start_time = word_info.start_time.total_seconds()
+            end_time = word_info.end_time.total_seconds()
+            word = word_info.word
+            subtitles.append({"start": start_time, "end": end_time, "word": word})
+    return subtitles
 
 
 if __name__ == '__main__':
