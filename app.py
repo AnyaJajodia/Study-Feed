@@ -1,6 +1,7 @@
 from dotenv import load_dotenv
-from flask import Flask, render_template, request, redirect, flash, url_for
-from flask import jsonify
+from flask import Flask, render_template, request, redirect, flash, url_for, jsonify
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 import json
@@ -8,14 +9,13 @@ import os
 import openai
 import requests
 from datetime import datetime
-from google.cloud import texttospeech, speech
+# from google.cloud import texttospeech, speech
 import random
 
 print("Current working directory:", os.getcwd())
-load_dotenv()
+load_dotenv(override=True)
 print("Loaded OpenAI API Key:", os.getenv("OPENAI_API_KEY"))
 print("Loaded Google API Key:", os.getenv("GOOGLE_APPLICATION_CREDENTIALS"))
-print("DID API KEY:", os.getenv("DID_API_KEY"))
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_pyfile('config.py', silent=False)
@@ -27,6 +27,20 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'
+login_manager.login_message = 'Please log in to use this feature.'
+login_manager.login_message_category = 'warning'
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+class User(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(150), unique=True, nullable=False)
+    email = db.Column(db.String(150), unique=True, nullable=False)
+    password_hash = db.Column(db.String(200), nullable=False)
+    feeds = db.relationship('Feed', backref='owner', lazy=True)
 
 class Feed(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -35,6 +49,7 @@ class Feed(db.Model):
     file_count = db.Column(db.Integer, default=0)
     progress = db.Column(db.Integer, default=0)
     reels = db.relationship('Reel', backref='feed', lazy=True, cascade="all, delete-orphan")
+    user_id  = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
 class Reel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -53,6 +68,7 @@ class Comment(db.Model):
     reel_id = db.Column(db.Integer, db.ForeignKey('reel.id'), nullable=False)
     content = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    user_id    = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
 
 # In-memory "database" for For You pages (feeds)
@@ -67,7 +83,12 @@ default_reels = [
 ]
 
 @app.route('/')
+def home():
+    return render_template('home.html')
+
+@app.route('/')
 @app.route('/for_you')
+@login_required
 def for_you():
     query = request.args.get('search_query', '').strip().lower()
     if query:
@@ -77,6 +98,7 @@ def for_you():
     return render_template('for_you.html', feeds=feeds)
 
 @app.route('/search', methods=['GET'])
+@login_required
 def search():
     query = request.args.get('q', '').strip().lower()
     feeds = Feed.query.filter(Feed.name.ilike(f'%{query}%')).all() if query else []
@@ -85,11 +107,13 @@ def search():
 
 
 @app.route('/make_new')
+@login_required
 def make_new():
     return render_template('make_new_feed.html')
 
 
 @app.route('/delete_feed/<int:feed_id>')
+@login_required
 def delete_feed(feed_id):
     feed = Feed.query.get(feed_id)
     if feed:
@@ -102,16 +126,65 @@ def delete_feed(feed_id):
 
 
 @app.route('/resume_feed/<int:feed_id>')
+@login_required
 def resume_feed(feed_id):
     feed = Feed.query.get_or_404(feed_id)
     return render_template('feed_reels.html', feed=feed)
 
 
 @app.route('/profile')
+@login_required
 def profile():
-    return render_template('profile.html')
+    # 1) Feeds created count + list
+    user_feeds = Feed.query.filter_by(user_id=current_user.id).order_by(Feed.id.desc()).all()
+    feed_count = len(user_feeds)
+
+    # 2) Recent comments (requires Comment.user_id; see note below)
+    recent_comments = Comment.query\
+        .filter_by(user_id=current_user.id)\
+        .order_by(Comment.created_at.desc())\
+        .limit(5).all()
+
+    return render_template(
+        'profile.html',
+        feed_count=feed_count,
+        feeds=user_feeds,
+        recent_comments=recent_comments
+    )
+
+@app.route('/activity')
+@login_required
+def user_activity():
+    activities = []
+    # Feed creation events (most recent 5)
+    feeds = Feed.query.filter_by(user_id=current_user.id)\
+             .order_by(Feed.id.desc())\
+             .limit(5).all()
+    for f in feeds:
+        activities.append({
+            'text': f"You created “{f.name}”",
+            'time': None  # we don’t have a timestamp on Feed—could add one via migration
+        })
+
+    # Comment events (most recent 5)
+    comments = Comment.query.filter_by(user_id=current_user.id)\
+                .order_by(Comment.created_at.desc())\
+                .limit(5).all()
+    for c in comments:
+        reel = Reel.query.get(c.reel_id)
+        delta = datetime.utcnow() - c.created_at
+        minutes = int(delta.total_seconds() // 60)
+        when = f"{minutes}m ago" if minutes < 60 else f"{minutes//60}h ago"
+        activities.append({
+            'text': f"You commented on “{reel.title}”",
+            'time': when
+        })
+
+    return jsonify(activities=activities)
+
 
 @app.route('/add_comment', methods=['POST'])
+@login_required
 def add_comment():
     reel_id = request.form.get('reel_id')
     comment_text = request.form.get('comment')
@@ -124,7 +197,11 @@ def add_comment():
     except ValueError:
         return jsonify({'status': 'error', 'message': 'Invalid reel id'}), 400
 
-    new_comment = Comment(reel_id=reel_id_int, content=comment_text)
+    new_comment = Comment(
+        reel_id=reel_id_int,
+        user_id=current_user.id,
+        content=comment_text
+    )
     db.session.add(new_comment)
     db.session.commit()
     return jsonify({'status': 'success', 'message': 'Comment added', 'comment': {
@@ -133,6 +210,7 @@ def add_comment():
     }})
 
 @app.route('/delete_comment/<int:comment_id>', methods=['POST'])
+@login_required
 def delete_comment(comment_id):
     comment = Comment.query.get(comment_id)
     if not comment:
@@ -160,7 +238,11 @@ def generate_feed():
         flash('Topic is required to generate a feed.', 'danger')
         return redirect(url_for('make_new'))
 
-    new_feed = Feed(name=topic, level=level, file_count=0)
+    new_feed = Feed(
+        name=topic,
+        level=level,
+        user_id=current_user.id
+    )
     db.session.add(new_feed)
     db.session.commit()
 
@@ -360,6 +442,60 @@ def generate_subtitles(audio_filepath):
             word = word_info.word
             subtitles.append({"start": start_time, "end": end_time, "word": word})
     return subtitles
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('for_you'))
+    if request.method == 'POST':
+        username = request.form['username']
+        email    = request.form['email']
+        password = request.form['password']
+        if User.query.filter_by(username=username).first():
+            flash('Username already exists.', 'warning')
+            return redirect(url_for('register'))
+        if User.query.filter_by(email=email).first():
+            flash('Email already registered.', 'warning')
+            return redirect(url_for('register'))
+        new_user = User(
+            username=username,
+            email=email,
+            password_hash=generate_password_hash(password)
+        )
+        db.session.add(new_user)
+        db.session.commit()
+        login_user(new_user)
+        flash('Registration successful.', 'success')
+        return redirect(url_for('for_you'))
+    return render_template('register.html')
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('for_you'))
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        user     = User.query.filter_by(username=username).first()
+        if user and check_password_hash(user.password_hash, password):
+            login_user(user)
+            flash('Logged in successfully.', 'success')
+            next_page = request.args.get('next')
+            return redirect(next_page or url_for('for_you'))
+        flash('Invalid credentials.', 'danger')
+        return redirect(url_for('login'))
+    return render_template('login.html')
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('Logged out.', 'info')
+    return redirect(url_for('home'))
+
 
 
 if __name__ == '__main__':

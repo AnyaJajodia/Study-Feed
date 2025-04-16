@@ -1,14 +1,69 @@
 {% extends "base.html" %}
-{% block title %}Profile - Study Reels{% endblock %}
+{% block title %}Profile – Study Reels{% endblock %}
 
 {% block full_width_header %}
 <div class="page-header">
   <h4>Profile</h4>
 </div>
-<div class="mt-3 custom-container">
-  <p>This page tracks your activity.</p>
-  <div class="alert alert-info">
-    Activity tracking coming soon.
+{% endblock %}
+
+{% block content %}
+<div>
+  <!-- 1) Feeds Created -->
+  <div class="mb-4">
+    <h5>Feeds Created: {{ feed_count }}</h5>
+  </div>
+
+  <!-- 2) My Feeds -->
+  <div class="mb-4">
+    <h5>My Feeds</h5>
+    <ul class="list-unstyled">
+      {% for feed in feeds %}
+        <li>
+          <a href="{{ url_for('resume_feed', feed_id=feed.id) }}">
+            {{ feed.name }}
+          </a>
+        </li>
+      {% else %}
+        <li><em>No feeds yet.</em></li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <!-- 3) Recent Activity -->
+  <div class="mb-4">
+    <h5>Recent Activity</h5>
+    <div id="activity-feed">
+      <p class="text-muted">Loading…</p>
+    </div>
   </div>
 </div>
+
+<script>
+// Poll every 60 seconds for new activity
+function fetchActivity() {
+  fetch('{{ url_for("user_activity") }}')
+    .then(r => r.json())
+    .then(data => {
+      const container = document.getElementById('activity-feed');
+      container.innerHTML = '';
+      if (!data.activities.length) {
+        container.innerHTML = '<p><em>No recent activity.</em></p>';
+        return;
+      }
+      data.activities.forEach(evt => {
+        const p = document.createElement('p');
+        p.textContent = evt.text + (evt.time ? ` — ${evt.time}` : '');
+        container.appendChild(p);
+      });
+    })
+    .catch(err => {
+      console.error('Activity fetch failed:', err);
+    });
+}
+
+// Initial load + interval
+fetchActivity();
+setInterval(fetchActivity, 60_000);
+</script>
 {% endblock %}

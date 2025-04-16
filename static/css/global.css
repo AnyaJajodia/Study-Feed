@@ -3,6 +3,7 @@ body {
   /* padding-top: 60px; */
   background-color: #333;
   color: lightgray;
+  font-family: Georgia, serif;
 }
 
 /* Consistent header styling for all pages */
@@ -36,8 +37,10 @@ body {
   bottom: 0;
   left: 0;
   right: 0;
+  padding: 10px;
+  padding-bottom: 15px;
   background: #000;  /* Dark background for bottom navigation */
-  border-top: 1px solid #333;  /* Dark border for dark theme */
+  border-top: 1px solid grey;  /* Dark border for dark theme */
   z-index: 1000;
 }
 .bottom-nav a {
@@ -47,6 +50,27 @@ body {
   padding: 10px 0;
   text-decoration: none;
   color: #fff;  /* Light text on dark background */
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.bottom-nav a:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: #fff;
+}
+
+.bottom-nav a.plus-btn {
+  width: 40px;
+  height: 30px;
+  margin: 10px;
+  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  border-radius: 2px;
+  border: 1px solid white;
+  color: white;
+  font-size: 1.5em;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Smaller header for pages like feed_reels */
@@ -231,8 +255,11 @@ body {
 /* Make the comment list scrollable when needed */
 .comment-panel .comments-list {
   flex: 1;
-  overflow-y: auto;
+  overflow-y: scroll;
   margin-top: 10px;
+  padding: 10px;
+  background-color: #333;
+  border-radius: 10px;
 }
 
 /* Instagram gradient for all primary action buttons */
@@ -272,4 +299,30 @@ body {
 
 .dark-font {
   color:#333 !important;
+}
+.custom-hr {
+  border: 1px solid grey;
+}
+.teaching-script {
+  font-size: 14px;
+}
+
+.comments-list::-webkit-scrollbar {
+  width: 8px;              /* scrollbar width */
+}
+.comments-list::-webkit-scrollbar-track {
+  background: #666;     /* track color (light gray) */
+}
+.comments-list::-webkit-scrollbar-thumb {
+  background-color: #888;  /* thumb color */
+  border-radius: 4px;      /* optional: rounded corners */
+}
+.comments-list::-webkit-scrollbar-thumb:hover {
+  background-color: #b4b4b4;  /* darker on hover */
+}
+
+.custom-home {
+  background-color: #666;
+  border: 2px solid black;
+  box-shadow: 10px 10px 10px black;
 }

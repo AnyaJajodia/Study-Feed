@@ -17,12 +17,20 @@
   <div class="container mb-5">
     {% block content %}{% endblock %}
   </div>
-  <!-- Bottom Navigation Bar -->
-  <nav class="bottom-nav d-flex">
-    <a href="{{ url_for('for_you') }}">For You</a>
-    <a href="{{ url_for('make_new') }}">New</a>
-    <a href="{{ url_for('profile') }}">Profile</a>
-  </nav>
+    <!-- Bottom Navigation Bar -->
+    <nav class="bottom-nav d-flex">
+      <a href="{{ url_for('home') }}">Home</a>
+      {% if current_user.is_authenticated %}
+        <a href="{{ url_for('for_you') }}">For You</a>
+        <!-- “+” button -->
+        <a href="{{ url_for('make_new') }}" class="plus-btn">+</a>
+        <a href="{{ url_for('profile') }}">Profile</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+      {% else %}
+        <a href="{{ url_for('login') }}">Login</a>
+      {% endif %}
+    </nav>
+  
   <!-- jQuery, Popper.js, Bootstrap JS -->
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
