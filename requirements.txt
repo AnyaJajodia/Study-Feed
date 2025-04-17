@@ -4,7 +4,6 @@ aiosignal==1.3.2
 alabaster 
 alembic==1.15.2
 anaconda-client 
-anaconda-project 
 annotated-types==0.7.0
 anyio==4.9.0
 appdirs==1.4.4
