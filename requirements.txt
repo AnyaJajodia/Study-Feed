@@ -156,7 +156,6 @@ multidict==6.4.3
 multipledispatch 
 munkres==1.1.4
 mypy-extensions==0.4.3
-navigator-updater==0.2.1
 nbclassic 
 nbclient 
 nbconvert 
