@@ -134,7 +134,6 @@ requests
 rope 
 rsa==4.9.1
 Rtree 
-ruamel-yaml-conda 
 scikit-image==0.18.3
 scikit-learn==1.5.2
 scikit-learn-intelex==2021.20210714.100439
