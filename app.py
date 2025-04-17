@@ -9,7 +9,7 @@ import os
 import openai
 import requests
 from datetime import datetime
-# from google.cloud import texttospeech, speech
+from google.cloud import texttospeech, speech
 import random
 
 print("Current working directory:", os.getcwd())
