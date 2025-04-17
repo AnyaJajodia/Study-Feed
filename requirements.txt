@@ -165,8 +165,6 @@ networkx
 nltk==3.6.5
 nose 
 notebook 
-numba==0.60.0
-numexpr 
 numpy==2.0.2
 numpydoc 
 olefile 
