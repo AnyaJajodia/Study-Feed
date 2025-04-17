@@ -234,6 +234,7 @@ body {
 
 /* Comment panel (right side) */
 .comment-panel {
+  position: relative;
   width: 0;                     /* Hidden by default */
   height: 100%;
   overflow: hidden;
@@ -325,4 +326,97 @@ body {
   background-color: #666;
   border: 2px solid black;
   box-shadow: 10px 10px 10px black;
+}
+
+.comment-panel .close-btn {
+  position: absolute;
+  right: 12px;
+  width: 5%;
+  height: 3%;
+  border-radius: 10px !important;             /* optional: make it slightly rounded */
+  font-size: 1.2rem !important;
+  font-weight: bold !important;
+  display: flex;                      /* <-- key */
+  align-items: center;               /* vertical centering */
+  justify-content: center;           /* horizontal centering */
+  z-index: 999;
+  padding: 0;
+}
+
+.comment-panel .close-btn:hover {
+  background-color: darkred;
+}
+
+
+
+
+@media (max-width: 600px) {
+
+  /* Full-width reel container */
+  .instagram-reel-container {
+    height: 95%;
+    padding: 0 10px; /* minimal side padding */
+    box-sizing: border-box;
+    border-radius: 12px;
+  }
+
+  .reel-video {
+    aspect-ratio: 9 / 16;
+    border-radius: 12px;
+  }
+
+  /* Move prev/next buttons to bottom */
+  .prev-btn,
+  .next-btn {
+    position: fixed;
+    top: auto;
+    transform: none;
+    width: 45%;
+    max-width: 160px;
+    font-size: 0.9em;
+    z-index: 9999;
+  }
+
+  .prev-btn {
+    left: 5%;
+  }
+
+  .next-btn {
+    right: 5%;
+  }
+
+  .comment-panel {
+    position: relative;
+    bottom: -100%;
+    left: 0;
+    width: 100% !important;
+    height: 60%;
+    max-height: 80%;
+    background-color: #181818;
+    transition: bottom 0.3s ease;
+    z-index: 9999;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.5);
+    padding: 16px 12px 12px 12px;
+    overflow-y: auto;
+  }
+
+  .reel-content{
+    align-items: center !important;
+    justify-content: flex-start !important;
+    transform: none !important;
+  }
+
+  .slide-wrapper.show-comments {
+    display: flex;
+    flex-direction: column;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    transform: none !important;
+  }
+
+  .slide-wrapper.show-comments .comment-panel {
+    bottom: 0;
+  }
 }

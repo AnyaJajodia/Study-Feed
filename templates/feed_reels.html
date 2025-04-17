@@ -68,6 +68,7 @@
 
           <!-- Comment panel sliding in from right -->
           <div class="comment-panel">
+            <button class="btn-primary close-btn" onclick="this.closest('.slide-wrapper').classList.remove('show-comments')">×</button>
             <h6>Comments</h6>
             <input type="hidden" class="reel-id" value="{{ reel.id }}">
             <textarea class="form-control comment-input" placeholder="Add a comment..."></textarea>
