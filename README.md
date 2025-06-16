@@ -107,17 +107,17 @@ python app.py
 
 ## 📁 Folder Structure
 
-/static
-/templates
-&nbsp;&nbsp;&nbsp;&nbsp;feed_reels.html
-&nbsp;&nbsp;&nbsp;&nbsp;make_new_feed.html
-&nbsp;&nbsp;&nbsp;&nbsp;search.html
-app.py
-models.py
-utils/
-&nbsp;&nbsp;&nbsp;&nbsp;generate_feed.py
-&nbsp;&nbsp;&nbsp;&nbsp;voiceover.py
-&nbsp;&nbsp;&nbsp;&nbsp;subtitles.py
+/static <br>
+/templates <br>
+&nbsp;&nbsp;&nbsp;&nbsp;feed_reels.html <br>
+&nbsp;&nbsp;&nbsp;&nbsp;make_new_feed.html <br>
+&nbsp;&nbsp;&nbsp;&nbsp;search.html <br>
+app.py <br>
+models.py <br>
+utils/ <br>
+&nbsp;&nbsp;&nbsp;&nbsp;generate_feed.py <br>
+&nbsp;&nbsp;&nbsp;&nbsp;voiceover.py <br>
+&nbsp;&nbsp;&nbsp;&nbsp;subtitles.py <br>
 
 ---
 
